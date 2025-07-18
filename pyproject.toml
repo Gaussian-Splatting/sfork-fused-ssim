@@ -1,0 +1,163 @@
+[build-system]
+requires = [
+    "setuptools>=65.0.0",
+    "uv_build>=0.8.0,<0.9.0",
+    "wheel>=0.38.0",
+    "torch>=2.0.0",
+    "ninja",
+]
+build-backend = "uv_build"
+
+[project]
+name = "fused-ssim"
+version = "1.0.0"
+description = "Fully Fused Differentiable SSIM implementation with CUDA acceleration"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Rahul Goel", email = "rahul.goel@example.com"},
+]
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: C++",
+    "Programming Language :: CUDA",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Environment :: GPU :: NVIDIA CUDA",
+]
+keywords = ["ssim", "cuda", "pytorch", "image-processing", "deep-learning", "computer-vision"]
+
+dependencies = [
+    "torch>=2.5.1",
+    "numpy",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytorch-msssim",
+    "pillow",
+]
+dev = [
+    "pytorch-msssim",
+    "pillow",
+    "matplotlib",
+    "numpy",
+    "pytest>=7.0",
+]
+all = [
+    "pytorch-msssim",
+    "pillow",
+    "matplotlib",
+    "numpy",
+    "pytest>=7.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/rahul-goel/fused-ssim"
+Repository = "https://github.com/rahul-goel/fused-ssim"
+Issues = "https://github.com/rahul-goel/fused-ssim/issues"
+Documentation = "https://github.com/rahul-goel/fused-ssim#readme"
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# UV Configuration
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# [tool.uv]
+# Disable build isolation for this package since it needs torch to be available during build
+# no-build-isolation-package = ["fused-ssim"]
+
+[tool.uv.build-backend]
+# Specify flat layout (package is in root, not src/)
+module-root = ""
+
+[tool.uv.sources]
+# Use PyTorch CUDA index for GPU acceleration
+# torch = [
+#     { index = "pytorch-cuda", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+#     { index = "pytorch-cpu", marker = "sys_platform == 'darwin'" },
+# ]
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Package Indexes
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[tool.uv.pip]
+torch-backend = "auto"
+
+# [[tool.uv.index]]
+# url = "https://pypi.org/simple"
+# default = true
+
+# [[tool.uv.index]]
+# name = "pytorch-cpu"
+# url = "https://download.pytorch.org/whl/cpu"
+# explicit = true
+
+# [[tool.uv.index]]
+# name = "pytorch-cuda"
+# url = "https://download.pytorch.org/whl/cu124"
+# explicit = true
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Development Tools Configuration
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["fused_ssim*"]
+exclude = ["tests*"]
+
+[tool.setuptools.package-data]
+fused_ssim = ["*.pyi", "py.typed"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+    # directories
+    \.eggs
+    | \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | build
+    | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["fused_ssim"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "gpu: marks tests as requiring GPU",
+]
+
+# [tool.mypy]
+# python_version = "3.8"
+# warn_return_any = true
+# warn_unused_configs = true
+# ignore_missing_imports = true
